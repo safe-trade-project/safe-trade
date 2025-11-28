@@ -65,6 +65,7 @@ export const fetchCoins = async () => {
 
 		const data = await response.json();
 
+
 		return data as CryptoBasicDto[];
 	} catch (error) {
 		console.error(error);
