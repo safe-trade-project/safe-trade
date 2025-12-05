@@ -1,5 +1,5 @@
-
 import type { CryptoBasicDto } from '../contracts/cryptoBasic.dto.ts';
+import type { CryptoDetailDto } from '../contracts/cryptoDetail.dto.ts';
 
 const API_KEY = import.meta.env.VITE_API_GECKO_KEY;
 const top50CoinGeckoIds = [
@@ -86,9 +86,9 @@ export const fetchCoin = async (id: string | undefined) => {
 
 		const data = await response.json();
 
-		return data as CryptoBasicDto;
+		return data as CryptoDetailDto;
 	} catch (error) {
 		console.error(error);
-		return [];
+		throw error;
 	}
 };

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { CryptoBasicDto } from '../contracts/cryptoBasic.dto';
 
 type Props = {
@@ -5,12 +6,15 @@ type Props = {
 };
 
 export const CryptoList = ({ crypto }: Props) => {
+	const navigate = useNavigate();
+
 	return (
 		<div className="flex flex-col gap-3">
 			{crypto.map((elem) => (
 				<div 
 					key={elem.id} 
-					className="border rounded-lg p-4 hover:bg-gray-50 flex items-center gap-4"
+					onClick={() => navigate(`/cryptos/${elem.id}`)}
+					className="border rounded-lg p-4 hover:bg-gray-50 flex items-center gap-4 cursor-pointer transition-all hover:shadow-md"
 				>
 					<img 
 						src={elem.image} 

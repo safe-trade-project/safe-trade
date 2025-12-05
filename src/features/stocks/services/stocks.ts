@@ -10,6 +10,7 @@ export const fetchStocks = async () => {
 	const API_TOKEN = import.meta.env.VITE_API_STOCKDATA_KEY;
 
 	const url = `https://api.stockdata.org/v1/data/quote?symbols=${TOP_20_SYMBOLS.join((","))}&api_token=${API_TOKEN}`
+	console.log(url);
 
 	try {
 		const response = await fetch(url);
