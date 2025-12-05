@@ -28,7 +28,7 @@ export const CryptoDetails = () => {
 	}
 
 	return (
-		<div className="p-8 max-w-6xl mx-auto">
+		<div className="p-8 max-w-6xl mx-auto text-white ">
 			<button
 				onClick={() => navigate('/cryptos')}
 				className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"
@@ -36,8 +36,8 @@ export const CryptoDetails = () => {
 				← Back to Cryptos
 			</button>
 
-			<div className="bg-white rounded-lg shadow-lg p-8">
-				<div className="flex items-center gap-6 mb-8 border-b pb-6">
+			<div className=" rounded-lg shadow-lg p-8 bg-background-light	">
+				<div className="flex items-center gap-6 mb-8 border-b pb-6 ">
 					<img
 						src={data.image.large}
 						alt={data.name}
@@ -57,22 +57,22 @@ export const CryptoDetails = () => {
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-					<div className="bg-gray-50 rounded-lg p-4">
-						<p className="text-sm text-gray-600 mb-2">24h Change</p>
+					<div className="bg-white/3 rounded-lg p-4 ">
+						<p className="text-sm text-gray-600 mb-2 text-white font-bold">24h Change</p>
 						<p className={`text-2xl font-semibold ${data.market_data.price_change_percentage_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
 							{data.market_data.price_change_percentage_24h >= 0 ? '+' : ''}
 							{data.market_data.price_change_percentage_24h.toFixed(2)}%
 						</p>
 					</div>
-					<div className="bg-gray-50 rounded-lg p-4">
-						<p className="text-sm text-gray-600 mb-2">7d Change</p>
+					<div className="bg-white/3 rounded-lg p-4">
+						<p className="text-sm text-gray-600 mb-2 text-white font-bold">7d Change</p>
 						<p className={`text-2xl font-semibold ${data.market_data.price_change_percentage_7d >= 0 ? 'text-green-600' : 'text-red-600'}`}>
 							{data.market_data.price_change_percentage_7d >= 0 ? '+' : ''}
 							{data.market_data.price_change_percentage_7d.toFixed(2)}%
 						</p>
 					</div>
-					<div className="bg-gray-50 rounded-lg p-4">
-						<p className="text-sm text-gray-600 mb-2">30d Change</p>
+					<div className="bg-white/3 rounded-lg p-4">
+						<p className="text-sm text-gray-600 mb-2 text-white font-bold">30d Change</p>
 						<p className={`text-2xl font-semibold ${data.market_data.price_change_percentage_30d >= 0 ? 'text-green-600' : 'text-red-600'}`}>
 							{data.market_data.price_change_percentage_30d >= 0 ? '+' : ''}
 							{data.market_data.price_change_percentage_30d.toFixed(2)}%
@@ -83,35 +83,35 @@ export const CryptoDetails = () => {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 					<div className="space-y-4">
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">Market Cap</span>
+							<span className="text-primary">Market Cap</span>
 							<span className="font-semibold">${data.market_data.market_cap.usd.toLocaleString()}</span>
 						</div>
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">24h Volume</span>
+							<span className="text-primary">24h Volume</span>
 							<span className="font-semibold">${data.market_data.total_volume.usd.toLocaleString()}</span>
 						</div>
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">24h High</span>
+							<span className="text-primary">24h High</span>
 							<span className="font-semibold">${data.market_data.high_24h.usd.toLocaleString()}</span>
 						</div>
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">24h Low</span>
+							<span className="text-primary">24h Low</span>
 							<span className="font-semibold">${data.market_data.low_24h.usd.toLocaleString()}</span>
 						</div>
 					</div>
 					<div className="space-y-4">
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">Circulating Supply</span>
+							<span className="text-primary">Circulating Supply</span>
 							<span className="font-semibold">{data.market_data.circulating_supply.toLocaleString()}</span>
 						</div>
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">Total Supply</span>
+							<span className="text-primary">Total Supply</span>
 							<span className="font-semibold">
 								{data.market_data.total_supply ? data.market_data.total_supply.toLocaleString() : 'N/A'}
 							</span>
 						</div>
 						<div className="flex justify-between border-b pb-2">
-							<span className="text-gray-600">Max Supply</span>
+							<span className="text-primary">Max Supply</span>
 							<span className="font-semibold">
 								{data.market_data.max_supply ? data.market_data.max_supply.toLocaleString() : 'N/A'}
 							</span>
@@ -121,9 +121,9 @@ export const CryptoDetails = () => {
 
 				{data.description.en && (
 					<div className="border-t pt-6">
-						<h2 className="text-2xl font-bold mb-4">About {data.name}</h2>
+						<h2 className="text-2xl font-bold mb-4 text-">About {data.name}</h2>
 						<div
-							className="text-gray-700 leading-relaxed"
+							className="text-gray-700 leading-relaxed text-white/70"
 							dangerouslySetInnerHTML={{ __html: data.description.en }}
 						/>
 					</div>

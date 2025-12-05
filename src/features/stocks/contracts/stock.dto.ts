@@ -1,9 +1,3 @@
 
-export interface StockDto {
-	ticker: string;
-	name: string;
-	price: number;
-	day_high: number;
-	day_low: number;
-	day_change: number;
-}
+// Stock DTO removed — minimal placeholder to avoid breaking imports while cleaning up the feature.
+export type StockDto = any;
