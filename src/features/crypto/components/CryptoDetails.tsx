@@ -1,12 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useApi } from '../../../hooks/useApi';
+import { useQuery } from '@tanstack/react-query';
 import { fetchCoin } from '../services/crypto';
-import type { CryptoDetailDto } from '../contracts/cryptoDetail.dto';
 
 export const CryptoDetails = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { isLoading, isError, data } = useApi<CryptoDetailDto>(() => fetchCoin(id));
+	const { isLoading, isError, data } = useQuery({
+		queryKey: ['crypto', id],
+		queryFn: () => fetchCoin(id),
+		enabled: !!id,
+	});
 
 	if (isLoading) {
 		return (

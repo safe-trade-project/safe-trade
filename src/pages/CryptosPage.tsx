@@ -1,10 +1,12 @@
-import { useApi } from '../hooks/useApi';
+import { useQuery } from '@tanstack/react-query';
 import { CryptoList } from '../features/crypto/components/CryptoList';
 import { fetchCoins } from '../features/crypto/services/crypto';
-import type { CryptoBasicDto } from '../features/crypto/contracts/cryptoBasic.dto.ts';
 
 export const CryptosPage = () => {
-  const { isLoading, isError, data } = useApi<CryptoBasicDto[]>(fetchCoins);
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['cryptos'],
+    queryFn: fetchCoins,
+  });
 
   if (isLoading) {
     return <div className="p-8">
