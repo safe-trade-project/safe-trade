@@ -1,15 +1,71 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCoin } from '../services/crypto';
+import { useState } from 'react';
+import { buyCoins, sellCoins, getPortfolio } from '../services/buy_sell';
 
 export const CryptoDetails = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
+	const [amount, setAmount] = useState<string>('');
+	const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+	const [portfolio, setPortfolio] = useState(getPortfolio());
+
 	const { isLoading, isError, data } = useQuery({
 		queryKey: ['crypto', id],
 		queryFn: () => fetchCoin(id),
 		enabled: !!id,
 	});
+
+	const handleBuy = () => {
+		if (!data || !amount) return;
+		const numAmount = parseFloat(amount);
+		if (isNaN(numAmount)) {
+			setMessage({ text: 'Invalid amount', type: 'error' });
+			return;
+		}
+
+		const result = buyCoins(
+			data.id,
+			data.name,
+			data.symbol,
+			numAmount,
+			data.market_data.current_price.usd
+		);
+
+		if (result.success) {
+			setMessage({ text: `Successfully bought ${numAmount} ${data.symbol.toUpperCase()}`, type: 'success' });
+			setAmount('');
+			setPortfolio(getPortfolio());
+		} else {
+			setMessage({ text: result.error || 'Transaction failed', type: 'error' });
+		}
+	};
+
+	const handleSell = () => {
+		if (!data || !amount) return;
+		const numAmount = parseFloat(amount);
+		if (isNaN(numAmount)) {
+			setMessage({ text: 'Invalid amount', type: 'error' });
+			return;
+		}
+
+		const result = sellCoins(
+			data.id,
+			data.name,
+			data.symbol,
+			numAmount,
+			data.market_data.current_price.usd
+		);
+
+		if (result.success) {
+			setMessage({ text: `Successfully sold ${numAmount} ${data.symbol.toUpperCase()}`, type: 'success' });
+			setAmount('');
+			setPortfolio(getPortfolio());
+		} else {
+			setMessage({ text: result.error || 'Transaction failed', type: 'error' });
+		}
+	};
 
 	if (isLoading) {
 		return (
@@ -27,14 +83,31 @@ export const CryptoDetails = () => {
 		);
 	}
 
+	const holding = portfolio.holdings.find(h => h.coinId === data?.id);
+	const totalValue = amount && data ? parseFloat(amount) * data.market_data.current_price.usd : 0;
+
 	return (
 		<div className="p-8 max-w-6xl mx-auto">
-			<button
-				onClick={() => navigate('/cryptos')}
-				className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"
-			>
-				← Back to Cryptos
-			</button>
+			<div className="flex justify-between items-center mb-6">
+				<button
+					onClick={() => navigate('/cryptos')}
+					className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
+				>
+					← Back to Cryptos
+				</button>
+				<div className="flex gap-4 items-center">
+					<div className="text-right">
+						<p className="text-sm text-gray-600">Balance</p>
+						<p className="text-xl font-bold">${portfolio.balance.toFixed(2)}</p>
+					</div>
+					<button
+						onClick={() => navigate('/portfolio')}
+						className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+					>
+						Portfolio
+					</button>
+				</div>
+			</div>
 
 			<div className="bg-white rounded-lg shadow-lg p-8">
 				<div className="flex items-center gap-6 mb-8 border-b pb-6">
@@ -47,12 +120,61 @@ export const CryptoDetails = () => {
 						<h1 className="text-4xl font-bold mb-2">{data.name}</h1>
 						<p className="text-xl text-gray-600 uppercase">{data.symbol}</p>
 						<p className="text-sm text-gray-500 mt-1">Rank #{data.market_cap_rank}</p>
+						{holding && (
+							<p className="text-sm text-green-600 font-semibold mt-2">
+								You own: {holding.amount.toFixed(8)} {data.symbol.toUpperCase()}
+							</p>
+						)}
 					</div>
 					<div className="text-right">
 						<p className="text-sm text-gray-500 mb-1">Current Price</p>
 						<p className="text-4xl font-bold">
 							${data.market_data.current_price.usd.toLocaleString()}
 						</p>
+					</div>
+				</div>
+
+				{message && (
+					<div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+						{message.text}
+					</div>
+				)}
+
+				<div className="bg-blue-50 rounded-lg p-6 mb-8">
+					<h2 className="text-2xl font-bold mb-4">Trade {data.name}</h2>
+					<div className="flex gap-4 items-end">
+						<div className="flex-1">
+							<label className="block text-sm font-medium text-gray-700 mb-2">
+								Amount ({data.symbol.toUpperCase()})
+							</label>
+							<input
+								type="number"
+								step="any"
+								value={amount}
+								onChange={(e) => setAmount(e.target.value)}
+								placeholder="0.00"
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+							/>
+							{amount && (
+								<p className="text-sm text-gray-600 mt-1">
+									Total: ${totalValue.toFixed(2)}
+								</p>
+							)}
+						</div>
+						<button
+							onClick={handleBuy}
+							disabled={!amount}
+							className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
+						>
+							Buy
+						</button>
+						<button
+							onClick={handleSell}
+							disabled={!amount}
+							className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
+						>
+							Sell
+						</button>
 					</div>
 				</div>
 

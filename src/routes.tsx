@@ -3,6 +3,7 @@ import App from './App';
 import { CryptosPage } from './pages/CryptosPage';
 import { CryptoDetailsPage } from './pages/CryptoDetailsPage';
 import { StocksPage } from './pages/StocksPage';
+import { PortfolioPage } from './pages/PortfolioPage';
 
 export const router = createBrowserRouter([
 {
@@ -20,5 +21,9 @@ element: <CryptoDetailsPage />,
 {
 path: '/stocks',
 element: <StocksPage />,
+},
+{
+path: '/portfolio',
+element: <PortfolioPage />,
 },
 ]);
