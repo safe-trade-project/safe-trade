@@ -9,12 +9,12 @@ export const CryptoList = ({ crypto }: Props) => {
 	const navigate = useNavigate();
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-3 text-white">
 			{crypto.map((elem) => (
 				<div 
 					key={elem.id} 
 					onClick={() => navigate(`/cryptos/${elem.id}`)}
-					className="border rounded-lg p-4 hover:bg-gray-50 flex items-center gap-4 cursor-pointer transition-all hover:shadow-md"
+					className="rounded-lg p-4 hover:bg-white/3 flex items-center gap-4 cursor-pointer transition-all hover:shadow-md bg-background-light"
 				>
 					<img 
 						src={elem.image} 

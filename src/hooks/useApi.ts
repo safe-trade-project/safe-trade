@@ -6,10 +6,7 @@ type ApiResponse<D> = {
 	data: D | undefined;
 };
 
-// const { isLoading, isError, data } = useApi<CharacterDto>('http://example.com');
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const useApi = <T>(fetcherOrUrl: string | Function) => {
-	// fetcher: string | Function
 	const [state, setState] = useState<ApiResponse<T>>({
 		isLoading: true,
 		isError: false,
@@ -18,7 +15,7 @@ export const useApi = <T>(fetcherOrUrl: string | Function) => {
 
 	const loadData = async () => {
 		if (typeof fetcherOrUrl === 'string') {
-			fetch(fetcherOrUrl) // fetcher()
+			fetch(fetcherOrUrl) 
 				.then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -32,7 +29,7 @@ export const useApi = <T>(fetcherOrUrl: string | Function) => {
 				.then((data) => {
 					setState({
 						...state,
-						data: data, // data.results
+						data: data, 
 						isLoading: false,
 					});
 				})

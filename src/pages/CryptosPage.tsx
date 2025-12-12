@@ -21,8 +21,8 @@ export const CryptosPage = () => {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Crypto Market</h1>
+    <div className="p-8 ">
+      <h1 className="text-3xl font-bold mb-6 text-white">Crypto Market</h1>
       {data && <CryptoList crypto={data} />}
     </div>
   );
