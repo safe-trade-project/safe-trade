@@ -88,26 +88,12 @@ export const CryptoDetails = () => {
 
 	return (
 		<div className="p-8 max-w-6xl mx-auto">
-			<div className="flex justify-between items-center mb-6">
-				<button
-					onClick={() => navigate('/cryptos')}
-					className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
-				>
-					← Back to Cryptos
-				</button>
-				<div className="flex gap-4 items-center">
-					<div className="text-right">
-						<p className="text-sm text-gray-600">Balance</p>
-						<p className="text-xl font-bold">${portfolio.balance.toFixed(2)}</p>
-					</div>
-					<button
-						onClick={() => navigate('/portfolio')}
-						className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-					>
-						Portfolio
-					</button>
-				</div>
-			</div>
+			<button
+				onClick={() => navigate('/cryptos')}
+				className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"
+			>
+				← Back to Cryptos
+			</button>
 
 			<div className=" rounded-lg shadow-lg p-8 bg-background-light	">
 				<div className="flex items-center gap-6 mb-8 border-b pb-6 ">

@@ -43,20 +43,12 @@ export const PortfolioPage = () => {
 		<div className="p-8 max-w-7xl mx-auto">
 			<div className="flex justify-between items-center mb-8">
 				<h1 className="text-4xl font-bold">Portfolio</h1>
-				<div className="flex gap-4">
-					<button
-						onClick={handleReset}
-						className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-					>
-						Reset Portfolio
-					</button>
-					<button
-						onClick={() => navigate('/cryptos')}
-						className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-					>
-						Back to Cryptos
-					</button>
-				</div>
+				<button
+					onClick={handleReset}
+					className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+				>
+					Reset Portfolio
+				</button>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
