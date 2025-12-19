@@ -15,7 +15,7 @@
 //
 // 	const loadData = async () => {
 // 		if (typeof fetcherOrUrl === 'string') {
-// 			fetch(fetcherOrUrl) 
+// 			fetch(fetcherOrUrl)
 // 				.then((response) => {
 // 					if (response.ok) {
 // 						return response.json();
@@ -29,7 +29,7 @@
 // 				.then((data) => {
 // 					setState({
 // 						...state,
-// 						data: data, 
+// 						data: data,
 // 						isLoading: false,
 // 					});
 // 				})

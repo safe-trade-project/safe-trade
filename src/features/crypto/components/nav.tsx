@@ -1,6 +1,3 @@
 export default function Nav() {
-  return (
-    <>
-    </>
-  )
+  return <></>;
 }

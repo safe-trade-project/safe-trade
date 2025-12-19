@@ -16,19 +16,35 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Layout><LandingPage /></Layout>,
+    path: "/",
+    element: (
+      <Layout>
+        <LandingPage />
+      </Layout>
+    ),
   },
   {
-    path: '/cryptos',
-    element: <Layout><CryptosPage /></Layout>,
+    path: "/cryptos",
+    element: (
+      <Layout>
+        <CryptosPage />
+      </Layout>
+    ),
   },
   {
-    path: '/cryptos/:id',
-    element: <Layout><CryptoDetailsPage /></Layout>,
+    path: "/cryptos/:id",
+    element: (
+      <Layout>
+        <CryptoDetailsPage />
+      </Layout>
+    ),
   },
   {
-    path: '/portfolio',
-    element: <Layout><PortfolioPage /></Layout>,
+    path: "/portfolio",
+    element: (
+      <Layout>
+        <PortfolioPage />
+      </Layout>
+    ),
   },
 ]);
