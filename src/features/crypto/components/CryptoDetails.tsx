@@ -87,7 +87,7 @@ export const CryptoDetails = () => {
 	const totalValue = amount && data ? parseFloat(amount) * data.market_data.current_price.usd : 0;
 
 	return (
-		<div className="p-8 max-w-6xl mx-auto">
+		<div className="p-8 max-w-6xl mx-auto min-h-screen flex flex-col">
 			<button
 				onClick={() => navigate('/cryptos')}
 				className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"

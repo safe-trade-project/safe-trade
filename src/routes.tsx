@@ -6,10 +6,12 @@ import { LandingPage } from './pages/LandingPage';
 import { Navbar } from './components/Navbar';
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
-  <>
+  <div className="h-full flex flex-col">
     <Navbar />
-    {children}
-  </>
+    <div className="flex-1">
+      {children}
+    </div>
+  </div>
 );
 
 export const router = createBrowserRouter([

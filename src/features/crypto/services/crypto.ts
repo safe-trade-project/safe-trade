@@ -57,7 +57,7 @@ const top50CoinGeckoIds = [
 export const fetchCoins = async () => {
 	const supported_cryptos = top50CoinGeckoIds.join(",");
 	try {
-		const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${supported_cryptos}&order=market_cap_desc&per_page=50&page=1&sparkline=false`, {
+		const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${supported_cryptos}&order=market_cap_desc&per_page=50&page=1&sparkline=true`, {
 			headers: {
 				Authorization: `Bearer ${API_KEY}`,
 			},
