@@ -18,7 +18,7 @@ type ChartPoint = {
 
 type HoverPos = {
   xVal?: number;
-  yVal?: number
+  yVal?: number;
 };
 
 export function CryptoChart({ data }: { data: ChartPoint[] }) {
@@ -33,18 +33,24 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
         <AreaChart
           data={data}
           syncId="anyId"
-          onMouseMove={(state: any) => {
-            const index: number | undefined = state?.activeTooltipIndex;
+          onMouseMove={(state: unknown) => {
+            const typedState = state as {
+              activeTooltipIndex?: number;
+              activeLabel?: number | string;
+            };
+
+            const index = typedState.activeTooltipIndex;
             if (typeof index === "number" && data[index]) {
               setHoverPos({ xVal: data[index].time, yVal: data[index].price });
               return;
             }
 
-            const label: number | undefined = state?.activeLabel;
-            if (typeof label === "number") {
-              const p = data.find((d) => d.time === label);
-              if (p) {
-                setHoverPos({ xVal: p.time, yVal: p.price });
+            const label = typedState.activeLabel;
+            if (typeof label === "number" || typeof label === "string") {
+              const timeVal = typeof label === "string" ? Number(label) : label;
+              const point = data.find((d) => d.time === timeVal);
+              if (point) {
+                setHoverPos({ xVal: point.time, yVal: point.price });
                 return;
               }
             }
