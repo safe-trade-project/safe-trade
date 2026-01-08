@@ -1,5 +1,6 @@
 import type { CryptoBasicDto } from "../contracts/cryptoBasic.dto.ts";
 import type { CryptoDetailDto } from "../contracts/cryptoDetail.dto.ts";
+import type { CryptoMarketDto } from "../contracts/cryptoMarket.dto.ts";
 
 const API_KEY = import.meta.env.VITE_API_GECKO_KEY;
 const top50CoinGeckoIds = [
@@ -55,13 +56,16 @@ const top50CoinGeckoIds = [
   "thorchain",
 ];
 export const fetchCoins = async () => {
-	const supported_cryptos = top50CoinGeckoIds.join(",");
-	try {
-		const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${supported_cryptos}&order=market_cap_desc&per_page=50&page=1&sparkline=true`, {
-			headers: {
-				Authorization: `Bearer ${API_KEY}`,
-			},
-		});
+  const supported_cryptos = top50CoinGeckoIds.join(",");
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${supported_cryptos}&order=market_cap_desc&per_page=50&page=1&sparkline=true`,
+      {
+        headers: {
+          "x-cg-demo-api-key": API_KEY ?? "",
+        },
+      },
+    );
 
     const data = await response.json();
 
@@ -78,10 +82,10 @@ export const fetchCoin = async (id: string | undefined) => {
       throw new Error("Id is required");
     }
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${id}`,
+      `https://api.coingecko.com/api/v3/coins/${id}?sparkline=true`,
       {
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
+          "x-cg-demo-api-key": API_KEY ?? "",
         },
       },
     );
@@ -89,6 +93,29 @@ export const fetchCoin = async (id: string | undefined) => {
     const data = await response.json();
 
     return data as CryptoDetailDto;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const fetchMarketChart = async (id: string | undefined) => {
+  try {
+    if (!id) {
+      throw new Error("Id is required");
+    }
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=365`,
+      {
+        headers: {
+          "x-cg-demo-api-key": API_KEY ?? "",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    return data as CryptoMarketDto;
   } catch (error) {
     console.error(error);
     throw error;
