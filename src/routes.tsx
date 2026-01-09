@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
-import { CryptosPage } from "./pages/CryptosPage";
-import { CryptoDetailsPage } from "./pages/CryptoDetailsPage";
-import { PortfolioPage } from "./pages/PortfolioPage";
-import { LandingPage } from "./pages/LandingPage";
-import { Layout } from "./components/Layout";
+import { createBrowserRouter } from 'react-router-dom';
+import { CryptosPage } from './pages/CryptosPage';
+import { CryptoDetailsPage } from './pages/CryptoDetailsPage';
+import { PortfolioPage } from './pages/PortfolioPage';
+import { LandingPage } from './pages/LandingPage';
+import { Layout } from './components/Layout';
 
 export const router = createBrowserRouter([
   {

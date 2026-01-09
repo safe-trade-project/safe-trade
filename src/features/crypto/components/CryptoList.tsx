@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { CryptoBasicDto } from "../contracts/cryptoBasic.dto";
+import { CryptoSparkline } from "./CryptoSparkline"
 
 type Props = {
   crypto: CryptoBasicDto[];
@@ -37,6 +38,10 @@ export const CryptoList = ({ crypto }: Props) => {
                   {elem.price_change_percentage_24h >= 0 ? "+" : ""}
                   {elem.price_change_percentage_24h.toFixed(2)}%
                 </p>
+              </div>
+              <div className="text-right h-12">
+                <p className="text-xs text-gray-500">7d Change</p>
+                <CryptoSparkline prices={elem.sparkline_in_7d?.price ?? []} />
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-500">Rank</p>
