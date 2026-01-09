@@ -1,7 +1,6 @@
 import type { CryptoBasicDto } from "../contracts/cryptoBasic.dto.ts";
 import type { CryptoDetailDto } from "../contracts/cryptoDetail.dto.ts";
 
-const API_KEY = import.meta.env.VITE_API_GECKO_KEY;
 const top50CoinGeckoIds = [
   "bitcoin",
   "ethereum",
@@ -55,15 +54,9 @@ const top50CoinGeckoIds = [
   "thorchain",
 ];
 export const fetchCoins = async () => {
-  const supported_cryptos = top50CoinGeckoIds.join(",");
   try {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${supported_cryptos}&order=market_cap_desc&per_page=50&page=1&sparkline=false`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      },
+      `https://localhost:8080/crypto-all`,
     );
 
     const data = await response.json();
@@ -81,12 +74,7 @@ export const fetchCoin = async (id: string | undefined) => {
       throw new Error("Id is required");
     }
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      },
+      `https://localhost:8080/coins/${id}`,
     );
 
     const data = await response.json();
