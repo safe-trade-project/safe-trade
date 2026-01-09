@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCoin } from "../services/crypto";
+import { fetchCoin, fetchMarketChart } from "../services/crypto";
 import { useState } from "react";
 import { buyCoins, sellCoins, getPortfolio } from "../services/buy_sell";
+import { CryptoChart } from "./CryptoChart";
 
 export const CryptoDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -76,6 +77,19 @@ export const CryptoDetails = () => {
     }
   };
 
+  //------------------------------------
+  const marketQuery = useQuery({
+    queryKey: ["chart", id],
+    queryFn: () => fetchMarketChart(id),
+    enabled: !!id,
+  });
+
+  const pricesChartData = marketQuery.data?.prices?.map(([ts, price]) => ({ time: ts, price: price })) ?? [];
+
+  // kapitalizacja rynkowa
+  // const marketCapsChartData = marketQuery.data?.market_caps?.map(([ts, price]) => ({ time: ts, price: price })) ?? [];
+  //------------------------------------
+
   if (isLoading) {
     return (
       <div className="p-8">
@@ -98,14 +112,14 @@ export const CryptoDetails = () => {
       ? parseFloat(amount) * data.market_data.current_price.usd
       : 0;
 
-	return (
-		<div className="p-8 max-w-6xl mx-auto min-h-screen flex flex-col">
-			<button
-				onClick={() => navigate('/cryptos')}
-				className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"
-			>
-				← Back to Cryptos
-			</button>
+  return (
+    <div className="p-8 max-w-6xl mx-auto min-h-screen flex flex-col">
+      <button
+        onClick={() => navigate('/cryptos')}
+        className="mb-6 text-blue-600 hover:text-blue-800 flex items-center gap-2"
+      >
+        ← Back to Cryptos
+      </button>
 
       <div className=" rounded-lg shadow-lg p-8 bg-background-light	">
         <div className="flex items-center gap-6 mb-8 border-b pb-6 ">
@@ -129,6 +143,14 @@ export const CryptoDetails = () => {
             </p>
           </div>
         </div>
+
+        {
+          pricesChartData.length > 0 && (
+            <div className="mb-8">
+              <CryptoChart data={pricesChartData} />
+            </div>
+          )
+        }
 
         {message && (
           <div
