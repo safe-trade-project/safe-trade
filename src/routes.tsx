@@ -3,16 +3,7 @@ import { CryptosPage } from './pages/CryptosPage';
 import { CryptoDetailsPage } from './pages/CryptoDetailsPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { LandingPage } from './pages/LandingPage';
-import { Navbar } from './components/Navbar';
-
-const Layout = ({ children }: { children: React.ReactNode }) => (
-  <div className="h-full flex flex-col">
-    <Navbar />
-    <div className="flex-1">
-      {children}
-    </div>
-  </div>
-);
+import { Layout } from './components/Layout';
 
 export const router = createBrowserRouter([
   {
