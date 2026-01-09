@@ -56,7 +56,7 @@ const top50CoinGeckoIds = [
 export const fetchCoins = async () => {
   try {
     const response = await fetch(
-      `https://localhost:8080/crypto-all`,
+      `${import.meta.env.VITE_API_BASE_URL}/crypto-all`,
     );
 
     const data = await response.json();
@@ -74,7 +74,26 @@ export const fetchCoin = async (id: string | undefined) => {
       throw new Error("Id is required");
     }
     const response = await fetch(
-      `https://localhost:8080/coins/${id}`,
+      `${import.meta.env.VITE_API_BASE_URL}/coins/${id}`,
+    );
+
+    const data = await response.json();
+
+    return data as CryptoDetailDto;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+
+export const fetchMarketChart = async (id: string | undefined) => {
+  try {
+    if (!id) {
+      throw new Error("Id is required");
+    }
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/crypto/:id/market-chart`,
     );
 
     const data = await response.json();
