@@ -28,6 +28,13 @@ type ChartBox = {
   height: number;
 };
 
+type BrushHandle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export function CryptoChart({ data }: { data: ChartPoint[] }) {
   const id = useId();
 
@@ -101,9 +108,68 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
     return yMax - ratio * (yMax - yMin);
   }
 
+  function BrushHandle({ x, y, width, height }: BrushHandle) {
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill="#101010"
+          stroke="#0A8DC7"
+          strokeWidth={1}
+        />
+        <line x1={x + width / 2} y1={y + 6} x2={x + width / 2} y2={y + height - 6} stroke="#9ca3af" strokeWidth={2} opacity={0.7} />
+        <line x1={x + width / 2 - 3} y1={y + 8} x2={x + width / 2 - 3} y2={y + height - 8} stroke="#9ca3af" strokeWidth={1} opacity={0.5} />
+        <line x1={x + width / 2 + 3} y1={y + 8} x2={x + width / 2 + 3} y2={y + height - 8} stroke="#9ca3af" strokeWidth={1} opacity={0.5} />
+      </g>
+    );
+  }
+
+  const [brushRange, setBrushRange] = useState<{ startIndex: number; endIndex: number } | null>(null);
+
+  const brushValues = useMemo(() => {
+    const startIndex = (data[brushRange?.startIndex ?? 0]).time;
+    const endIndex = (data[brushRange?.endIndex ?? data.length - 1]).time;
+
+    return {
+      start: startIndex ? new Date(startIndex).toLocaleDateString() : "ERROR: invalid range",
+      end: endIndex ? new Date(endIndex).toLocaleDateString() : "ERROR: invalid range",
+    };
+  }, [brushRange, data]);
+
+  const [brushWidth, setBrushWidth] = useState<number>(0);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const getW = () => {
+      const svg = root.querySelector("svg");
+      if (!svg) return;
+
+      const brushBg = svg.querySelector(".recharts-brush > rect:nth-child(1)") as SVGRectElement | null;
+      const width = brushBg?.getAttribute("width");
+      const w = width ? Number(width) : NaN;
+
+      Number.isFinite(w) && w > 0 && setBrushWidth(w);
+    };
+
+    const raf = requestAnimationFrame(getW);
+
+    const ro = new ResizeObserver(() => getW());
+    ro.observe(root);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="w-full" ref={rootRef}>
-      <ResponsiveContainer width="100%" aspect={2.5}>
+    <div className="w-full flex flex-col" ref={rootRef}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <AreaChart
           data={data}
           syncId={id}
@@ -161,10 +227,9 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
           </defs>
           <YAxis
             dataKey="price"
-            width={110}
+            width={100}
             tickCount={40}
             textAnchor="end"
-            label={{ value: 'USD', fontSize: 12, position: 'bottom' }}
             tickFormatter={(v) => Number(v).toLocaleString(undefined, { maximumFractionDigits: 2 })}
             domain={[yMin, yMax]}
           />
@@ -173,14 +238,13 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
             height={85}
             angle={-55}
             textAnchor="end"
-            label={{ value: 'DATE', fontSize: 12, position: 'left' }}
             tickFormatter={(ms) => new Date(ms).toLocaleDateString()}
           />
           <Tooltip
             cursor={false}
             wrapperStyle={{ pointerEvents: "none" }}
             contentStyle={{
-              backgroundColor: "#333333",
+              backgroundColor: "#00000099",
               border: "1px solid grey",
               borderRadius: 2,
               padding: "10px 10px",
@@ -238,10 +302,17 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
           />
           <Brush
             dataKey="time"
-            tickFormatter={(ms) => new Date(ms).toLocaleDateString()}
-            stroke="#000000"
-            fill="#0A8DC7"
+            height={34}
+            stroke="#0A8DC7"
+            fill="#0A0A0A05"
             travellerWidth={10}
+            traveller={BrushHandle}
+            tickFormatter={() => ""}
+            onChange={(range) => {
+              if (!range) return;
+
+              setBrushRange({ startIndex: range.startIndex, endIndex: range.endIndex });
+            }}
           />
           <ReferenceLine
             y={maxPrice}
@@ -267,6 +338,10 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
           />
         </AreaChart>
       </ResponsiveContainer>
+      <div style={{ width: `${brushWidth}px` }} className="ml-auto mr-1 flex items-center justify-between text-xs text-gray-300">
+        <p>{brushValues.start}</p>
+        <p>{brushValues.end}</p>
+      </div>
     </div >
   );
 }
