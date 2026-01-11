@@ -4,6 +4,7 @@ import { CryptoDetailsPage } from './pages/CryptoDetailsPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { LandingPage } from './pages/LandingPage';
 import { Layout } from './components/Layout';
+import { Dashboard } from './pages/Dashboard';
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <PortfolioPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <Layout>
+        <Dashboard />
       </Layout>
     ),
   },

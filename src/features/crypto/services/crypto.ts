@@ -1,6 +1,7 @@
 import type { CryptoBasicDto } from "../contracts/cryptoBasic.dto.ts";
 import type { CryptoDetailDto } from "../contracts/cryptoDetail.dto.ts";
 import type { CryptoMarketDto } from "../contracts/cryptoMarket.dto.ts";
+import gecko_to_binance from "./gecko_to_binance.ts";
 
 const API_KEY = import.meta.env.VITE_API_GECKO_KEY;
 const top50CoinGeckoIds = [
@@ -121,3 +122,14 @@ export const fetchMarketChart = async (id: string | undefined) => {
     throw error;
   }
 };
+
+
+export async function fetchWeekCandles(interval : string, cryptoId : string, limit : number) {
+  const binanceCryptoId = gecko_to_binance[cryptoId] || cryptoId;
+  const url = `https://api.binance.com/api/v3/klines?symbol=${binanceCryptoId}&interval=${interval}&limit=${limit}`
+  const response = await fetch(url);
+  const data = await response.json();
+
+
+  return data;
+}

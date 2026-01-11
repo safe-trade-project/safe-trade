@@ -39,6 +39,16 @@ export const Navbar = () => {
             >
               Home
             </Link>
+                        <Link
+              to="/dashboard"
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                isActive("/dashboard")
+                  ? "bg-primary text-background shadow-[0_0_15px_rgba(5,211,242,0.3)]"
+                  : "text-white/70 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Dashboard
+            </Link>
             <Link
               to="/cryptos"
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
