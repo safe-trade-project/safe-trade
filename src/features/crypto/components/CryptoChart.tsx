@@ -153,7 +153,9 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
       const width = brushBg?.getAttribute("width");
       const w = width ? Number(width) : NaN;
 
-      Number.isFinite(w) && w > 0 && setBrushWidth(w);
+      if (Number.isFinite(w) && w > 0) {
+        setBrushWidth(w);
+      }
     };
 
     const raf = requestAnimationFrame(getW);
