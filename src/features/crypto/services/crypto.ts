@@ -23,7 +23,7 @@ export const fetchCoin = async (id: string | undefined) => {
       throw new Error("Id is required");
     }
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/coins/${id}`,
+      `${import.meta.env.VITE_API_BASE_URL}/crypto/${id}`,
     );
 
     const data = await response.json();
@@ -35,14 +35,13 @@ export const fetchCoin = async (id: string | undefined) => {
   }
 };
 
-
 export const fetchMarketChart = async (id: string | undefined) => {
   try {
     if (!id) {
       throw new Error("Id is required");
     }
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/crypto/:id/market-chart`,
+      `${import.meta.env.VITE_API_BASE_URL}/crypto/${id}/market-chart`,
     );
 
     const data = await response.json();
