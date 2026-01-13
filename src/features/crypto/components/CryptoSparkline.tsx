@@ -1,4 +1,4 @@
-import { AreaChart, Area, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, ResponsiveContainer, YAxis } from "recharts";
 import { useId } from "react";
 
 export function CryptoSparkline({ prices }: { prices: number[] }) {
@@ -10,6 +10,17 @@ export function CryptoSparkline({ prices }: { prices: number[] }) {
 
   const data = prices.map((price, index) => ({ index, price }));
 
+  let yMin = 0, yMax = 1;
+
+  if (prices.length > 0) {
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const pad = (maxPrice - minPrice) * 0.12;
+    yMin = minPrice - pad;
+    yMax = maxPrice + pad;
+  }
+
+
   return (
     <div className="w-40 h-10">
       <ResponsiveContainer width="100%" height="100%">
@@ -20,7 +31,7 @@ export function CryptoSparkline({ prices }: { prices: number[] }) {
               <stop offset="95%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-
+          <YAxis hide domain={[yMin, yMax]} />
           <Area
             type="monotone"
             dataKey="price"
