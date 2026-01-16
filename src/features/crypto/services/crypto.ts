@@ -8,8 +8,8 @@ export const fetchCoins = async () => {
     const response = await fetch(
       `${import.meta.env.VITE_API_BASE_URL}/crypto-all`,
     );
-
     const data = await response.json();
+    console.log(data)
 
     return data as CryptoBasicDto[];
   } catch (error) {
@@ -58,10 +58,34 @@ export const fetchMarketChart = async (id: string | undefined) => {
 
 export async function fetchWeekCandles(interval : string, cryptoId : string, limit : number) {
   const binanceCryptoId = gecko_to_binance[cryptoId] || cryptoId;
+  console.log("BINANCE ID: ", binanceCryptoId)
   const url = `https://api.binance.com/api/v3/klines?symbol=${binanceCryptoId}&interval=${interval}&limit=${limit}`
   const response = await fetch(url);
   const data = await response.json();
 
 
   return data;
+}
+
+
+export function socketCryptoPrice(cryptoId: string, onMessage: (price: number) => void) {
+  const binanceCryptoId = gecko_to_binance[cryptoId] || cryptoId;
+  const symbol = binanceCryptoId.toLowerCase();
+  const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@trade`);
+  
+  let lastPrice = 0;
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    lastPrice = parseFloat(data.p);
+  };
+
+  const intervalId = setInterval(() => {
+    if (lastPrice !== 0) onMessage(lastPrice);
+  }, 500);
+
+  ws.addEventListener('close', () => {
+    clearInterval(intervalId);
+  });
+
+  return ws;
 }

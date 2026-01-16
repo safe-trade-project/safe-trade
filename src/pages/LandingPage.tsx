@@ -2,13 +2,16 @@ import { Sparkles, ArrowRight, TrendingUp, ShieldCheck, Zap, Loader2 } from 'luc
 import { useQuery } from '@tanstack/react-query'
 import { fetchCoins } from '../features/crypto/services/crypto'
 import { Link } from 'react-router-dom'
+import { useEffect } from 'react';
 
 export const LandingPage = () => {
   const { data: cryptos, isLoading } = useQuery({
     queryKey: ['top-cryptos'],
     queryFn: fetchCoins,
   });
-
+  useEffect(() => {
+    console.log(cryptos);
+  }, []);
   const featuredCryptos = cryptos?.slice(0, 5) || [];
 
   return (

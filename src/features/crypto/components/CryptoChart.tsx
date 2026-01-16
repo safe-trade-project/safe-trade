@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
+import { formatPrice } from "../../../lib/utils";
 
 type ChartPoint = {
   time: number;
@@ -71,6 +72,7 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
             tickCount={40}
             textAnchor="end"
             label={{ value: 'USD', position: 'insideTopLeft' }}
+            tickFormatter={(val) => formatPrice(val)}
           />
           <XAxis
             dataKey="time"
@@ -92,7 +94,7 @@ export function CryptoChart({ data }: { data: ChartPoint[] }) {
             labelStyle={{ color: "#e5e7eb" }}
             itemStyle={{ color: "#e5e7eb" }}
             labelFormatter={(value) => `time: ${new Date(Number(value)).toLocaleString()}`}
-            formatter={(value) => [`$${Number(value).toLocaleString()}`, "price"]}
+            formatter={(value) => [`$${formatPrice(Number(value))}`, "price"]}
           />
           <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.2} />
           {/*vertical={false} horizontal={false}*/}

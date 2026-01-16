@@ -24,3 +24,14 @@ body {
   --color-primary: #05d3f2;
   --color-background-light: #1e1f23;
 }
+
+
+        .remove-arrow::-webkit-inner-spin-button,
+        .remove-arrow::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .remove-arrow {
+            -moz-appearance: textfield;
+        }

@@ -6,6 +6,7 @@ import {
   resetPortfolio,
 } from "../features/crypto/services/buy_sell";
 import { fetchCoins } from "../features/crypto/services/crypto";
+import { formatPrice } from "../lib/utils";
 
 export const PortfolioPage = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export const PortfolioPage = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 text-black">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <p className="text-gray-600 text-sm mb-2">Cash Balance</p>
           <p className="text-3xl font-bold">${portfolio.balance.toFixed(2)}</p>
@@ -128,10 +129,10 @@ export const PortfolioPage = () => {
                         {holding.amount.toFixed(8)}
                       </td>
                       <td className="text-right py-3 px-4">
-                        ${holding.avgPrice.toFixed(2)}
+                        ${formatPrice(holding.avgPrice)}
                       </td>
                       <td className="text-right py-3 px-4">
-                        ${coin?.current_price.toFixed(2) || "N/A"}
+                        ${formatPrice(coin?.current_price)}
                       </td>
                       <td className="text-right py-3 px-4">
                         ${holding.totalCost.toFixed(2)}
@@ -195,7 +196,7 @@ export const PortfolioPage = () => {
                 <div className="text-right">
                   <div className="font-semibold">
                     {transaction.amount.toFixed(8)} @ $
-                    {transaction.price.toFixed(2)}
+                    {formatPrice(transaction.price)}
                   </div>
                   <div className="text-sm text-gray-600">
                     Total: ${transaction.total.toFixed(2)}

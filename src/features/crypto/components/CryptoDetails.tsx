@@ -4,6 +4,7 @@ import { fetchCoin, fetchMarketChart } from "../services/crypto";
 import { useState } from "react";
 import { buyCoins, sellCoins, getPortfolio } from "../services/buy_sell";
 import { CryptoChart } from "./CryptoChart";
+import { formatPrice } from "../../../lib/utils";
 
 export const CryptoDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -139,7 +140,7 @@ export const CryptoDetails = () => {
           <div className="text-right">
             <p className="text-sm text-gray-500 mb-1">Current Price</p>
             <p className="text-4xl font-bold">
-              ${data.market_data.current_price.usd.toLocaleString()}
+              ${formatPrice(data.market_data.current_price.usd)}
             </p>
           </div>
         </div>
@@ -177,7 +178,7 @@ export const CryptoDetails = () => {
               />
               {amount && (
                 <p className="text-sm text-gray-600 mt-1">
-                  Total: ${totalValue.toFixed(2)}
+                  Total: ${formatPrice(totalValue)}
                 </p>
               )}
             </div>

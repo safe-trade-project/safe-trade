@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import type { CryptoBasicDto } from "../contracts/cryptoBasic.dto";
 import { CryptoSparkline } from "./CryptoSparkline"
+import { formatPrice } from "../../../lib/utils";
 
 type Props = {
   crypto: CryptoBasicDto[];
@@ -27,7 +28,7 @@ export const CryptoList = ({ crypto }: Props) => {
               <div className="text-right">
                 <p className="text-xs text-gray-500">Price</p>
                 <p className="text-lg font-semibold">
-                  ${elem.current_price.toLocaleString()}
+                  ${formatPrice(elem.current_price)}
                 </p>
               </div>
               <div className="text-right">
