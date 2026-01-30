@@ -4,7 +4,6 @@ import { fetchCoin, fetchMarketChart } from "../services/crypto";
 import { useState } from "react";
 import { buyCoins, sellCoins, getPortfolio } from "../services/buy_sell";
 import { CryptoChart } from "./CryptoChart";
-import { formatPrice } from "../../../lib/utils";
 
 export const CryptoDetails = () => {
   const { id } = useParams<{ id: string }>();

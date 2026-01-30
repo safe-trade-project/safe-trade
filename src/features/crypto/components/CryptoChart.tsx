@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import { formatPrice } from "../../../lib/utils";
 
 type ChartPoint = {
   time: number;
