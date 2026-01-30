@@ -152,7 +152,7 @@ export const PortfolioPage = () => {
                       <td className="text-right py-3 px-4">
                         <button
                           onClick={() => navigate(`/cryptos/${holding.coinId}`)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          className="text-purple-600 hover:text-purple-800 text-sm font-medium"
                         >
                           Trade
                         </button>

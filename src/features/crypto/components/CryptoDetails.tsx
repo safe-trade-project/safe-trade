@@ -127,7 +127,7 @@ export const CryptoDetails = () => {
     <div className="p-8 max-w-8/12 mx-auto min-h-screen flex flex-col">
       <button
         onClick={() => navigate('/cryptos')}
-        className="mb-6 text-2xl text-blue-500 hover:text-blue-600 flex items-center gap-2"
+        className="mb-6 text-2xl text-purple-500 hover:text-purple-600 flex items-center gap-2"
       >
         ← Back to Cryptos
       </button>
@@ -182,7 +182,7 @@ export const CryptoDetails = () => {
                   value={coinAmount}
                   onChange={(e) => onCoinChange(e.target.value.replace(",", "."))}
                   placeholder="0.00"
-                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
 
                 <p className="block text-sm font-semibold text-gray-300 mb-2">1{data.symbol.toUpperCase()} =~ ${currentPrice.toLocaleString()} USD</p>
@@ -197,7 +197,7 @@ export const CryptoDetails = () => {
                   value={cashAmount}
                   onChange={(e) => onUsdChange(e.target.value)}
                   placeholder={totalValue.toFixed(2)}
-                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div className="mt-auto flex flex-col gap-1">

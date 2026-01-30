@@ -13,7 +13,7 @@ export const LandingPage = () => {
   return (
     <div className="flex h-full overflow-hidden bg-background relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       <div className="w-full lg:w-[55%] h-full p-8 lg:p-16 flex flex-col justify-center items-start gap-y-8 z-10">

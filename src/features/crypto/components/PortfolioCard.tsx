@@ -61,15 +61,6 @@ export function PortfolioCard({ holding, cryptoData, onSell }: PortfolioCardProp
     }
   };
 
-  const handleQuickSell = (percent: number) => {
-    const amount = holding.amount * percent;
-    if (isUsdMode) {
-      setInputValue((amount * currentPrice).toFixed(2));
-    } else {
-      setInputValue(amount.toFixed(8));
-    }
-  };
-
   return (
     <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 transition-all hover:bg-white/[0.03]">
       <div className="flex items-center justify-between">
@@ -87,11 +78,14 @@ export function PortfolioCard({ holding, cryptoData, onSell }: PortfolioCardProp
         </div>
         <div className="text-right">
           <div className={`text-sm font-semibold ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+            {isProfit ? '+' : '-'}${formatPrice(Math.abs(profitLoss))}
+          </div>
+          <div className={`text-[10px] font-mono opacity-60 ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
             {isProfit ? '+' : ''}{profitLossPercent.toFixed(1)}%
           </div>
           <button
             onClick={() => setShowSellPanel(!showSellPanel)}
-            className="text-xs text-white/40 hover:text-white transition-colors"
+            className="text-[10px] text-white/40 hover:text-white transition-colors block ml-auto mt-1"
           >
             {showSellPanel ? 'Anuluj' : 'Sprzedaj'}
           </button>
@@ -128,17 +122,6 @@ export function PortfolioCard({ holding, cryptoData, onSell }: PortfolioCardProp
             >
               Max
             </button>
-          </div>
-          <div className="flex items-center gap-1 mb-2">
-            {[0.25, 0.5, 0.75, 1].map((percent) => (
-              <button
-                key={percent}
-                onClick={() => handleQuickSell(percent)}
-                className="flex-1 h-7 bg-white/[0.03] border border-white/10 rounded text-xs text-white/40 hover:text-white hover:bg-white/[0.06] transition-all"
-              >
-                {percent * 100}%
-              </button>
-            ))}
           </div>
           <div className="flex items-center justify-between text-xs text-white/40 mb-2">
             {isUsdMode ? (

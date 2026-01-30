@@ -36,11 +36,14 @@ export function Dashboard() {
     async function fetchCoinsData() {
       const data = await fetchCoins();
       setCoinsData(data);
-      if (data && data.length > 0) {
-        setCurrentCrypto(data[0]);
-      }
+      setCurrentCrypto(prev => {
+        if (prev) return prev;
+        return data && data.length > 0 ? data[0] : null;
+      });
     }
     fetchCoinsData();
+    const interval = setInterval(fetchCoinsData, 30000); 
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -61,6 +64,11 @@ export function Dashboard() {
     if (!currentCrypto?.symbol) return;
     const onSocketMessage = (price: number) => {
       setCurrentCrypto(prev => prev ? { ...prev, current_price: price } : null);
+      setCoinsData(prev => prev.map(c => 
+        c.symbol.toLowerCase() === currentCrypto.symbol.toLowerCase() 
+          ? { ...c, current_price: price } 
+          : c
+      ));
     };
     const ws = socketCryptoPrice(currentCrypto.symbol, onSocketMessage);
     return () => { if (ws) ws.close(); };
@@ -103,6 +111,11 @@ export function Dashboard() {
     return acc + (crypto ? h.amount * crypto.current_price : 0);
   }, 0);
 
+  const totalCostBasis = portfolio.holdings.reduce((acc, h) => acc + h.totalCost, 0);
+  const totalProfitLoss = totalPortfolioValue - totalCostBasis;
+  const totalProfitLossPercent = totalCostBasis > 0 ? (totalProfitLoss / totalCostBasis) * 100 : 0;
+  const isTotalProfit = totalProfitLoss >= 0;
+
   return (
     <main className="px-6 py-4 h-screen overflow-hidden flex flex-col">
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
@@ -129,19 +142,22 @@ export function Dashboard() {
             <span className="text-white font-mono font-semibold">${formatPrice(portfolio.balance)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-white/40">Portfolio:</span>
-            <span className="text-white font-mono font-semibold">${formatPrice(totalPortfolioValue)}</span>
+            <span className="text-white/40">Zysk/Strata:</span>
+            <span className={`font-mono font-semibold ${isTotalProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+              {isTotalProfit ? '+' : ''}${formatPrice(Math.abs(totalProfitLoss))} 
+              <span className="text-[10px] ml-1 opacity-70">({totalProfitLossPercent.toFixed(1)}%)</span>
+            </span>
           </div>
           <div className="flex items-center gap-2 pl-4 border-l border-white/10">
-            <span className="text-white/40">Łącznie:</span>
-            <span className="text-white font-mono font-bold">${formatPrice(portfolio.balance + totalPortfolioValue)}</span>
+            <span className="text-white/40 font-bold">Łącznie:</span>
+            <span className="text-white font-mono font-bold text-lg">${formatPrice(portfolio.balance + totalPortfolioValue)}</span>
           </div>
         </div>
       </div>
 
       <div className="flex-1 min-h-0 grid grid-cols-[1fr_360px] gap-6">
         <div className="flex flex-col min-h-0">
-          <div className="h-[400px] bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
+          <div className="h-[550px] bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
             <CandleChart candles={candles} currentPrice={currentCrypto?.current_price || null} />
           </div>
 
@@ -209,9 +225,11 @@ export function Dashboard() {
             />
           )}
 
+          
+
           {portfolio.holdings.length > 0 && (
             <div>
-              <h2 className="text-white/40 text-xs uppercase tracking-wider font-bold mb-2">Twoje pozycje</h2>
+              <h2 className="text-white/40 text-xs uppercase tracking-wider font-bold mb-2">Sprzedaj</h2>
               <div className="flex flex-col gap-2">
                 {portfolio.holdings.map((holding) => {
                   const cryptoInfo = coinsData.find(c => c.id === holding.coinId);
@@ -228,6 +246,46 @@ export function Dashboard() {
                         cryptoInfo?.current_price || 0
                       )}
                     />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {portfolio.holdings.length > 0 && (
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-3">
+              <h2 className="text-white/40 text-xs uppercase tracking-wider font-bold mb-2">Twoje aktywa</h2>
+              <div className="flex flex-col gap-1">
+                {portfolio.holdings.map((holding) => {
+                  const cryptoInfo = coinsData.find(c => c.id === holding.coinId);
+                  const value = holding.amount * (cryptoInfo?.current_price || 0);
+                  const profitLoss = value - holding.totalCost;
+                  const isProfit = profitLoss >= 0;
+                  return (
+                    <div
+                      key={holding.coinId}
+                      onClick={() => {
+                        const crypto = coinsData.find(c => c.id === holding.coinId);
+                        if (crypto) setCurrentCrypto(crypto);
+                      }}
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-white/[0.03] cursor-pointer transition-all"
+                    >
+                      <div className="flex items-center gap-2">
+                        {cryptoInfo?.image && (
+                          <img src={cryptoInfo.image} alt={holding.coinName} className="w-6 h-6 rounded-full" />
+                        )}
+                        <div>
+                          <span className="text-white text-sm font-medium">{holding.coinSymbol.toUpperCase()}</span>
+                          <span className="text-white/30 text-xs ml-1">{formatPrice(holding.amount)}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-white text-sm font-mono">${formatPrice(value)}</div>
+                        <div className={`text-[10px] font-mono ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {isProfit ? '+' : '-'}${formatPrice(Math.abs(profitLoss))} ({isProfit ? '+' : ''}{((profitLoss / holding.totalCost) * 100).toFixed(1)}%)
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
