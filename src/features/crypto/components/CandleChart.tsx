@@ -120,7 +120,7 @@ export function CandleChart({ candles, currentPrice }: CandleChartProps) {
   }, [candles]);
 
   return (
-    <div className='relative h-8/10 bg-background-light' ref={container}>
+    <div className='relative h-full bg-transparent' ref={container}>
       {hoverData && (
         <div 
           className="absolute z-50 bg-black/90 backdrop-blur-md p-3 rounded-lg text-[11px] text-white pointer-events-none border border-white/10 shadow-2xl transition-all duration-75"

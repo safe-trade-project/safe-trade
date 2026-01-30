@@ -1,38 +1,39 @@
-import { useState, useEffect, useRef, type Ref } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { SelectCrypto } from '../features/crypto/components/SelectCrypto';
 import { fetchCoins, fetchWeekCandles, socketCryptoPrice } from '../features/crypto/services/crypto';
+import { getPortfolio, buyCoins, sellCoins } from '../features/crypto/services/buy_sell';
 import { CandleChart } from '../features/crypto/components/CandleChart';
+import { CryptoTradeInput } from '../features/crypto/components/CryptoTradeInput';
+import { PortfolioCard } from '../features/crypto/components/PortfolioCard';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../components/ui/select';
 import type { CryptoBasicDto } from '../features/crypto/contracts/cryptoBasic.dto';
+import type { Portfolio } from '../features/crypto/contracts/portfolio.dto';
 import { formatPrice } from '../lib/utils';
 
 export function Dashboard() {
   const [currentCrypto, setCurrentCrypto] = useState<CryptoBasicDto | null>(null);
   const [coinsData, setCoinsData] = useState<CryptoBasicDto[]>([]);
   const [candles, setCandles] = useState([]);
-  const [interval, setIntervals] = useState({ intervalValue: 1, intervalSign : "w", amount: 100});
-  const [cryptoSocket, setCryptoSocket] = useState<WebSocket | null>(null);
-  
+  const [interval, setIntervals] = useState({ intervalValue: 1, intervalSign: "w", amount: 100 });
+  const [portfolio, setPortfolio] = useState<Portfolio>(getPortfolio());
+
   const intervals = [
-    { label: "minute", value: "m" },
-    { label: "hours", value: "h" },
-    { label: "day", value: "d" },
-    { label: "week", value: "w" },
-    { label: "month", value: "M" },
+    { label: "minuta", value: "m" },
+    { label: "godzina", value: "h" },
+    { label: "dzień", value: "d" },
+    { label: "tydzień", value: "w" },
+    { label: "miesiąc", value: "M" },
   ];
-  const livePrice = useRef<number | null>(null);
+
   const amountInputRef = useRef<HTMLInputElement>(null);
   const valueInputRef = useRef<HTMLInputElement>(null);
-  const buyButtonRef = useRef<HTMLButtonElement>(null);
-  const moneyInputRef = useRef<HTMLInputElement>(null);
-  const calculatedOutputRef = useRef(null);
-  const onSocketMessage = (event: number) => {
-    setCurrentCrypto(prev => prev ? { ...prev, current_price: event } : null);
-    livePrice.current = event;
-  };
-  
+
+  const refreshPortfolio = useCallback(() => {
+    setPortfolio(getPortfolio());
+  }, []);
+
   useEffect(() => {
-    async function fetchCoinsData() { 
+    async function fetchCoinsData() {
       const data = await fetchCoins();
       setCoinsData(data);
       if (data && data.length > 0) {
@@ -40,131 +41,200 @@ export function Dashboard() {
       }
     }
     fetchCoinsData();
-    
   }, []);
 
   useEffect(() => {
     async function fetchData() {
       if (!currentCrypto?.symbol) return;
       const candlesData = await fetchWeekCandles(
-        `${interval.intervalValue}${interval.intervalSign}`, 
-        currentCrypto.symbol, 
+        `${interval.intervalValue}${interval.intervalSign}`,
+        currentCrypto.symbol,
         interval.amount
-      )
+      );
       if (candlesData.length === 0) return;
       setCandles(candlesData);
     }
     fetchData();
-
-    
   }, [currentCrypto, interval]);
 
-useEffect(() => {
-  if (!currentCrypto?.symbol) return;
-  const ws = socketCryptoPrice(currentCrypto.symbol, onSocketMessage);
-  return () => { if (ws) ws.close(); };
+  useEffect(() => {
+    if (!currentCrypto?.symbol) return;
+    const onSocketMessage = (price: number) => {
+      setCurrentCrypto(prev => prev ? { ...prev, current_price: price } : null);
+    };
+    const ws = socketCryptoPrice(currentCrypto.symbol, onSocketMessage);
+    return () => { if (ws) ws.close(); };
+  }, [currentCrypto?.symbol]);
 
-}, [currentCrypto?.symbol]);
+  const handleBuy = useCallback((amount: number) => {
+    if (!currentCrypto) return;
+    const result = buyCoins(
+      currentCrypto.id,
+      currentCrypto.name,
+      currentCrypto.symbol,
+      amount,
+      currentCrypto.current_price
+    );
+    if (result.success) {
+      refreshPortfolio();
+    }
+  }, [currentCrypto, refreshPortfolio]);
+
+  const handleSell = useCallback((coinId: string, coinName: string, coinSymbol: string, amount: number, price: number) => {
+    const result = sellCoins(coinId, coinName, coinSymbol, amount, price);
+    if (result.success) {
+      refreshPortfolio();
+    }
+  }, [refreshPortfolio]);
 
   function changeIntervals() {
     const amount = parseInt(amountInputRef.current?.value || "100");
     const value = parseInt(valueInputRef.current?.value || "1");
-    setIntervals(prev => ({ 
+    setIntervals(prev => ({
       ...prev,
-      intervalValue: value, 
-      amount: amount 
+      intervalValue: value,
+      amount: amount
     }));
   }
 
+  const currentHolding = portfolio.holdings.find(h => h.coinId === currentCrypto?.id);
+  const totalPortfolioValue = portfolio.holdings.reduce((acc, h) => {
+    const crypto = coinsData.find(c => c.id === h.coinId);
+    return acc + (crypto ? h.amount * crypto.current_price : 0);
+  }, 0);
+
   return (
-    <main className="px-20 py-8 h-full grid-cols-2 grid">
-      <div className='h-full '>
-        <div className='text-white flex items-center'>
-          <h1 className='text-[3rem] font-semibold'>
-            {currentCrypto?.name || 'Loading...'} - {formatPrice(currentCrypto?.current_price)}$
-          </h1>
-          
-          <SelectCrypto 
-            currentCrypto={currentCrypto} 
-            setCurrentCrypto={setCurrentCrypto} 
-            cryptoData={coinsData} 
+    <main className="px-6 py-4 h-screen overflow-hidden flex flex-col">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <div className="flex items-center gap-4">
+          {currentCrypto?.image && (
+            <img src={currentCrypto.image} alt={currentCrypto.name} className="w-10 h-10 rounded-full" />
+          )}
+          <div>
+            <h1 className="text-white text-2xl font-bold">
+              {currentCrypto?.name || 'Loading...'}
+            </h1>
+            <span className="text-white/40 text-sm font-mono">${formatPrice(currentCrypto?.current_price)}</span>
+          </div>
+          <SelectCrypto
+            currentCrypto={currentCrypto}
+            setCurrentCrypto={setCurrentCrypto}
+            cryptoData={coinsData}
           />
         </div>
-        <div className='text-white h-[580px]'>
-          
-          <CandleChart candles={candles} currentPrice={currentCrypto?.current_price || null} />
 
-          <div className='mt-3'>
-            <div className="mt-6 flex items-end gap-3 p-4 rounded-2xl w-fit">
-                <Input 
-                  ref={valueInputRef}
-                  defaultValue={interval.intervalValue}
-                  placeholder="1" 
-                  type="number"
-                  label={"Interval Value"}
-                />
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Interval Unit</label>
-                <Select 
-                  value={interval.intervalSign} 
-                  onValueChange={(val) => setIntervals(prev => ({...prev, intervalSign: val}))}
-                >
-                  <SelectTrigger className="h-10 min-w-[80px] bg-background/50 border border-white/10 rounded-xl px-3 text-sm text-white flex items-center justify-between">
-                    <span className="uppercase">{interval.intervalSign}</span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {intervals.map((i) => (
-                      <SelectItem key={i.value} value={i.value}>
-                        {i.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Input
-                ref={amountInputRef}
-                  defaultValue={interval.amount}
-                  className="h-10 w-32 bg-background/50 border border-white/10 rounded-xl px-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/20 appearance-none remove-arrow" 
-                  type="number" 
-                  placeholder="100"
-                  label={"Amount"}
-              />   
-
-
-              <button 
-                onClick={changeIntervals} 
-                className="h-10 px-8 bg-primary text-background font-black text-xs uppercase tracking-widest rounded-xl transition-all hover:scale-[1.02] active:scale-95"
-              >
-                Submit
-              </button>
-            </div>
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-white/40">Gotówka:</span>
+            <span className="text-white font-mono font-semibold">${formatPrice(portfolio.balance)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-white/40">Portfolio:</span>
+            <span className="text-white font-mono font-semibold">${formatPrice(totalPortfolioValue)}</span>
+          </div>
+          <div className="flex items-center gap-2 pl-4 border-l border-white/10">
+            <span className="text-white/40">Łącznie:</span>
+            <span className="text-white font-mono font-bold">${formatPrice(portfolio.balance + totalPortfolioValue)}</span>
           </div>
         </div>
       </div>
-      <div className=" w-1/2 px-8">
-          <Input
-            ref={moneyInputRef}
-            label={"Buy amount"}
-            type='number'
-          />
+
+      <div className="flex-1 min-h-0 grid grid-cols-[1fr_360px] gap-6">
+        <div className="flex flex-col min-h-0">
+          <div className="h-[400px] bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
+            <CandleChart candles={candles} currentPrice={currentCrypto?.current_price || null} />
+          </div>
+
+          <div className="mt-3 flex items-center gap-3 flex-shrink-0">
+            <div className="flex flex-col gap-1">
+              <label className="text-[9px] font-bold text-white/40 uppercase tracking-wider">Wartość</label>
+              <input
+                ref={valueInputRef}
+                defaultValue={interval.intervalValue}
+                type="number"
+                className="h-9 w-16 bg-white/[0.03] border border-white/10 rounded-lg px-2 text-sm text-white outline-none focus:border-white/20"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[9px] font-bold text-white/40 uppercase tracking-wider">Jednostka</label>
+              <Select
+                value={interval.intervalSign}
+                onValueChange={(val) => setIntervals(prev => ({ ...prev, intervalSign: val }))}
+              >
+                <SelectTrigger className="h-9 min-w-[90px] bg-white/[0.03] border border-white/10 rounded-lg px-2 text-sm text-white">
+                  <span className="uppercase">{intervals.find(i => i.value === interval.intervalSign)?.label}</span>
+                </SelectTrigger>
+                <SelectContent>
+                  {intervals.map((i) => (
+                    <SelectItem key={i.value} value={i.value}>
+                      {i.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[9px] font-bold text-white/40 uppercase tracking-wider">Świece</label>
+              <input
+                ref={amountInputRef}
+                defaultValue={interval.amount}
+                type="number"
+                className="h-9 w-20 bg-white/[0.03] border border-white/10 rounded-lg px-2 text-sm text-white outline-none focus:border-white/20"
+              />
+            </div>
+
+            <button
+              onClick={changeIntervals}
+              className="h-9 px-4 bg-white/10 text-white font-semibold text-xs rounded-lg hover:bg-white/15 transition-all mt-auto"
+            >
+              Zastosuj
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4 overflow-y-auto">
+          {currentCrypto && (
+            <CryptoTradeInput
+              cryptoId={currentCrypto.id}
+              cryptoName={currentCrypto.name}
+              cryptoSymbol={currentCrypto.symbol}
+              cryptoImage={currentCrypto.image}
+              currentPrice={currentCrypto.current_price}
+              type="buy"
+              balanceUSD={portfolio.balance}
+              balanceCrypto={currentHolding?.amount || 0}
+              onSubmit={(amount) => handleBuy(amount)}
+            />
+          )}
+
+          {portfolio.holdings.length > 0 && (
+            <div>
+              <h2 className="text-white/40 text-xs uppercase tracking-wider font-bold mb-2">Twoje pozycje</h2>
+              <div className="flex flex-col gap-2">
+                {portfolio.holdings.map((holding) => {
+                  const cryptoInfo = coinsData.find(c => c.id === holding.coinId);
+                  return (
+                    <PortfolioCard
+                      key={holding.coinId}
+                      holding={holding}
+                      cryptoData={cryptoInfo}
+                      onSell={(amount) => handleSell(
+                        holding.coinId,
+                        holding.coinName,
+                        holding.coinSymbol,
+                        amount,
+                        cryptoInfo?.current_price || 0
+                      )}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
-}
-
-function Input({ ref, defaultValue, placeholder, type, className, label } : {
-  ref: Ref, defaultValue: string | number, placeholder: string, type: string, className?: string, label?: string}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-    {label && <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">{label}</label>}
-    <input 
-      ref={ref}
-      defaultValue={defaultValue}
-      className="h-10 w-32 bg-background/50 border border-white/10 rounded-xl px-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/20 appearance-none remove-arrow" 
-      placeholder={placeholder} 
-      type={type}
-      />
-      </div>
-  )
 }
