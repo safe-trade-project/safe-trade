@@ -19,13 +19,14 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-background/90 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto pl-[40px]">
         <div className="flex justify-between items-center h-16">
           <Link
             to="/"
-            className="text-2xl font-bold text-primary hover:opacity-80 transition-opacity"
+            className="text-2xl font-bold text-primary hover:opacity-80 transition-opacity flex flex-row items-center gap-3 mt-3"
           >
-            Safe Trade
+
+            <img src="./public/cca8db10-8b4a-4c70-81fb-276bc2945e62-removebg-preview.png" width={"200px"}/>
           </Link>
 
           <div className="flex items-center gap-3">

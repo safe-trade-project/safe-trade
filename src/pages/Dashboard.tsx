@@ -17,6 +17,8 @@ export function Dashboard() {
   const [interval, setIntervals] = useState({ intervalValue: 1, intervalSign: "w", amount: 100 });
   const [portfolio, setPortfolio] = useState<Portfolio>(getPortfolio());
 
+  
+
   const intervals = [
     { label: "minuta", value: "m" },
     { label: "godzina", value: "h" },
@@ -252,45 +254,7 @@ export function Dashboard() {
             </div>
           )}
 
-          {portfolio.holdings.length > 0 && (
-            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-3">
-              <h2 className="text-white/40 text-xs uppercase tracking-wider font-bold mb-2">Twoje aktywa</h2>
-              <div className="flex flex-col gap-1">
-                {portfolio.holdings.map((holding) => {
-                  const cryptoInfo = coinsData.find(c => c.id === holding.coinId);
-                  const value = holding.amount * (cryptoInfo?.current_price || 0);
-                  const profitLoss = value - holding.totalCost;
-                  const isProfit = profitLoss >= 0;
-                  return (
-                    <div
-                      key={holding.coinId}
-                      onClick={() => {
-                        const crypto = coinsData.find(c => c.id === holding.coinId);
-                        if (crypto) setCurrentCrypto(crypto);
-                      }}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-white/[0.03] cursor-pointer transition-all"
-                    >
-                      <div className="flex items-center gap-2">
-                        {cryptoInfo?.image && (
-                          <img src={cryptoInfo.image} alt={holding.coinName} className="w-6 h-6 rounded-full" />
-                        )}
-                        <div>
-                          <span className="text-white text-sm font-medium">{holding.coinSymbol.toUpperCase()}</span>
-                          <span className="text-white/30 text-xs ml-1">{formatPrice(holding.amount)}</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-white text-sm font-mono">${formatPrice(value)}</div>
-                        <div className={`text-[10px] font-mono ${isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
-                          {isProfit ? '+' : '-'}${formatPrice(Math.abs(profitLoss))} ({isProfit ? '+' : ''}{((profitLoss / holding.totalCost) * 100).toFixed(1)}%)
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          
         </div>
       </div>
     </main>

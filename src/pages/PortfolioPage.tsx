@@ -48,62 +48,62 @@ export const PortfolioPage = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">Portfolio</h1>
         <button
           onClick={handleReset}
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          className="bg-red-500/10 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg hover:bg-red-500/20 transition-all font-semibold"
         >
           Reset Portfolio
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 text-black">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <p className="text-gray-600 text-sm mb-2">Cash Balance</p>
-          <p className="text-3xl font-bold">${portfolio.balance.toFixed(2)}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 text-white">
+        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all hover:bg-white/[0.04]">
+          <p className="text-white/40 text-sm mb-2 font-medium uppercase tracking-wider">Gotówka</p>
+          <p className="text-3xl font-bold font-mono">${formatPrice(portfolio.balance)}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <p className="text-gray-600 text-sm mb-2">Holdings Value</p>
-          <p className="text-3xl font-bold">${totalHoldingsValue.toFixed(2)}</p>
+        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all hover:bg-white/[0.04]">
+          <p className="text-white/40 text-sm mb-2 font-medium uppercase tracking-wider">Wartość aktywów</p>
+          <p className="text-3xl font-bold font-mono">${formatPrice(totalHoldingsValue)}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <p className="text-gray-600 text-sm mb-2">Total Value</p>
-          <p className="text-3xl font-bold">${totalValue.toFixed(2)}</p>
+        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all hover:bg-white/[0.04]">
+          <p className="text-white/40 text-sm mb-2 font-medium uppercase tracking-wider">Łączna wartość</p>
+          <p className="text-3xl font-bold font-mono">${formatPrice(totalValue)}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <p className="text-gray-600 text-sm mb-2">Profit/Loss</p>
+        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all hover:bg-white/[0.04]">
+          <p className="text-white/40 text-sm mb-2 font-medium uppercase tracking-wider">Zysk / Strata</p>
           <p
-            className={`text-3xl font-bold ${totalProfitLoss >= 0 ? "text-green-600" : "text-red-600"}`}
+            className={`text-3xl font-bold font-mono ${totalProfitLoss >= 0 ? "text-emerald-400" : "text-red-400"}`}
           >
-            {totalProfitLoss >= 0 ? "+" : ""}${totalProfitLoss.toFixed(2)}
+            {totalProfitLoss >= 0 ? "+" : ""}${formatPrice(Math.abs(totalProfitLoss))}
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-        <h2 className="text-2xl font-bold mb-6">Your Holdings</h2>
+      <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-8 mb-8">
+        <h2 className="text-2xl font-bold mb-6">Twoje Aktywa</h2>
         {portfolio.holdings.length === 0 ? (
-          <p className="text-gray-500">
-            No holdings yet. Start trading to build your portfolio!
+          <p className="text-white/20 italic">
+            Brak aktywów. Zacznij handlować, aby zbudować swoje portfolio!
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">Coin</th>
-                  <th className="text-right py-3 px-4">Amount</th>
-                  <th className="text-right py-3 px-4">Avg Price</th>
-                  <th className="text-right py-3 px-4">Current Price</th>
-                  <th className="text-right py-3 px-4">Total Cost</th>
-                  <th className="text-right py-3 px-4">Current Value</th>
-                  <th className="text-right py-3 px-4">P/L</th>
-                  <th className="text-right py-3 px-4">Action</th>
+                <tr className="border-b border-white/5 text-white/40 text-xs uppercase tracking-wider">
+                  <th className="text-left py-4 px-4 font-bold">Kryptowaluta</th>
+                  <th className="text-right py-4 px-4 font-bold">Ilość</th>
+                  <th className="text-right py-4 px-4 font-bold">Śr. Cena</th>
+                  <th className="text-right py-4 px-4 font-bold">Akt. Cena</th>
+                  <th className="text-right py-4 px-4 font-bold">Koszt</th>
+                  <th className="text-right py-4 px-4 font-bold">Wartość</th>
+                  <th className="text-right py-4 px-4 font-bold">Zysk/Strata</th>
+                  <th className="text-right py-4 px-4 font-bold">Akcja</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-white/5">
                 {portfolio.holdings.map((holding) => {
                   const currentValue = getHoldingValue(
                     holding.coinId,
@@ -117,44 +117,48 @@ export const PortfolioPage = () => {
                   return (
                     <tr
                       key={holding.coinId}
-                      className="border-b hover:bg-gray-50"
+                      className="group hover:bg-white/[0.02] transition-colors"
                     >
-                      <td className="py-3 px-4">
-                        <div className="font-semibold">{holding.coinName}</div>
-                        <div className="text-sm text-gray-500">
+                      <td className="py-4 px-4">
+                        <div className="font-semibold text-white group-hover:text-primary transition-colors">
+                          {holding.coinName}
+                        </div>
+                        <div className="text-xs text-white/30 font-mono">
                           {holding.coinSymbol.toUpperCase()}
                         </div>
                       </td>
-                      <td className="text-right py-3 px-4">
-                        {holding.amount.toFixed(8)}
+                      <td className="text-right py-4 px-4 font-mono text-sm">
+                        {formatPrice(holding.amount)}
                       </td>
-                      <td className="text-right py-3 px-4">
+                      <td className="text-right py-4 px-4 font-mono text-sm text-white/60">
                         ${formatPrice(holding.avgPrice)}
                       </td>
-                      <td className="text-right py-3 px-4">
+                      <td className="text-right py-4 px-4 font-mono text-sm text-white/60">
                         ${formatPrice(coin?.current_price)}
                       </td>
-                      <td className="text-right py-3 px-4">
-                        ${holding.totalCost.toFixed(2)}
+                      <td className="text-right py-4 px-4 font-mono text-sm text-white/60">
+                        ${formatPrice(holding.totalCost)}
                       </td>
-                      <td className="text-right py-3 px-4">
-                        ${currentValue.toFixed(2)}
+                      <td className="text-right py-4 px-4 font-mono text-sm font-semibold">
+                        ${formatPrice(currentValue)}
                       </td>
                       <td
-                        className={`text-right py-3 px-4 font-semibold ${profitLoss >= 0 ? "text-green-600" : "text-red-600"}`}
+                        className={`text-right py-4 px-4 font-mono font-semibold ${profitLoss >= 0 ? "text-emerald-400" : "text-red-400"}`}
                       >
-                        {profitLoss >= 0 ? "+" : ""}${profitLoss.toFixed(2)}
-                        <div className="text-xs">
+                        <div className="text-sm">
+                          {profitLoss >= 0 ? "+" : ""}${formatPrice(Math.abs(profitLoss))}
+                        </div>
+                        <div className="text-[10px] opacity-70">
                           ({profitLoss >= 0 ? "+" : ""}
                           {profitLossPercent.toFixed(2)}%)
                         </div>
                       </td>
-                      <td className="text-right py-3 px-4">
+                      <td className="text-right py-4 px-4">
                         <button
                           onClick={() => navigate(`/cryptos/${holding.coinId}`)}
-                          className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                          className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 px-3 py-1 rounded-md text-xs font-bold transition-all shadow-sm"
                         >
-                          Trade
+                          HANDEL
                         </button>
                       </td>
                     </tr>
@@ -166,36 +170,36 @@ export const PortfolioPage = () => {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-6">Transaction History</h2>
+      <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-8">
+        <h2 className="text-2xl font-bold mb-6 text-white">Historia Transakcji</h2>
         {portfolio.transactions.length === 0 ? (
-          <p className="text-gray-500">No transactions yet.</p>
+          <p className="text-white/20 italic">Brak transakcji.</p>
         ) : (
           <div className="space-y-3">
             {portfolio.transactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between border-b pb-3"
+                className="flex items-center justify-between p-4 rounded-xl border border-white/5 hover:bg-white/[0.01] transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div
-                    className={`px-3 py-1 rounded font-semibold text-sm ${transaction.type === "buy" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                    className={`px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider ${transaction.type === "buy" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}
                   >
-                    {transaction.type.toUpperCase()}
+                    {transaction.type === "buy" ? "KUPNO" : "SPRZEDAŻ"}
                   </div>
                   <div>
-                    <div className="font-semibold">
+                    <div className="font-semibold text-sm">
                       {transaction.coinName} (
                       {transaction.coinSymbol.toUpperCase()})
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-[10px] text-white/30 font-mono">
                       {new Date(transaction.timestamp).toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold">
-                    {transaction.amount.toFixed(8)} @ $
+                  <div className="font-bold text-sm font-mono">
+                    {formatPrice(transaction.amount)} @ $
                     {formatPrice(transaction.price)}
                   </div>
                   <div className="text-sm text-gray-600">

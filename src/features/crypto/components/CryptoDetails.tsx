@@ -169,57 +169,7 @@ export const CryptoDetails = () => {
               <CryptoChart data={pricesChartData} />
             </div>
           )}
-          <div className="mt-6 max-w-1/4 bg-white/3 rounded-lg p-6 flex flex-col h-full">
-            <h2 className="text-white text-2xl font-bold mb-4">Trade {data.name}</h2>
-            <div className="flex flex-col gap-4 flex-1">
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
-                  Amount ({data.symbol.toUpperCase()})
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={coinAmount}
-                  onChange={(e) => onCoinChange(e.target.value.replace(",", "."))}
-                  placeholder="0.00"
-                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-
-                <p className="block text-sm font-semibold text-gray-300 mb-2">1{data.symbol.toUpperCase()} =~ ${currentPrice.toLocaleString()} USD</p>
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
-                  Amount USD
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={cashAmount}
-                  onChange={(e) => onUsdChange(e.target.value)}
-                  placeholder={totalValue.toFixed(2)}
-                  className="w-full text-white px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              <div className="mt-auto flex flex-col gap-1">
-                <button
-                  onClick={handleBuy}
-                  disabled={!coinAmount || Number(coinAmount) <= 0}
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
-                >
-                  Buy
-                </button>
-                <button
-                  onClick={handleSell}
-                  disabled={!coinAmount || Number(coinAmount) <= 0}
-                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
-                >
-                  Sell
-                </button>
-              </div>
-            </div>
           </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white/3 rounded-lg p-4 ">
             <p className="text-sm mb-2 text-white font-bold">
